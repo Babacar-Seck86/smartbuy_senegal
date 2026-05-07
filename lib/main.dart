@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'smartbuy_onboarding.dart';
 import 'smartbuy_scanner.dart';
 import 'smartbuy_product_map.dart';
@@ -13,17 +14,24 @@ class SmartBuyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SmartBuy Senegal',
       debugShowCheckedModeBanner: false,
+      title: 'SmartBuy Sénégal',
+
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D52)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1A3C2E),
+        ),
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
-      initialRoute: '/',
+
+      // Première page affichée
+      home: const OnboardingScreen(),
+
+      // Navigation entre les pages
       routes: {
-        '/':        (_) => const SmartBuyOnboarding(),
-        '/scanner': (_) => const SmartBuyScanner(),
-        '/map':     (_) => const SmartBuyProductMap(),
+        '/scanner': (context) => const ScannerScreen(),
+        '/map': (context) => const ProductDetailsScreen(),
       },
     );
   }
