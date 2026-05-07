@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 // Constantes partagées pour la cohérence visuelle
 class SmartBuyColors {
-  static const Color vertSénégal = Color(0xFF2E7D32);
-  static const Color vertClair = Color(0xFFE8F5E9);
-  static const Color orMeilleur = Color(0xFFFFB800);
-  static const Color fondGris = Color(0xFFF5F7F5);
-  static const Color texteSombre = Color(0xFF1A1A1A);
-  static const Color texteGris = Color(0xFF666666);
+  static const Color green = Color(0xFF2E7D32);
+  static const Color lightGreen = Color(0xFFE8F5E9);
+  static const Color orange = Color(0xFFFFB800);
+  static const Color lightGrey = Color(0xFFF5F7F5);
+  static const Color black = Color(0xFF1A1A1A);
+  static const Color grey = Color(0xFF666666);
 }
 
 class ProductDetailsScreen extends StatelessWidget {
@@ -16,21 +16,24 @@ class ProductDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SmartBuyColors.fondGris,
+      backgroundColor: SmartBuyColors.lightGrey,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: SmartBuyColors.texteSombre),
+          icon: const Icon(Icons.arrow_back_ios, color: SmartBuyColors.black),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           "Analyse du Produit",
-          style: TextStyle(color: SmartBuyColors.texteSombre, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: SmartBuyColors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share_outlined, color: SmartBuyColors.texteSombre),
+            icon: const Icon(Icons.share_outlined, color: SmartBuyColors.black),
             onPressed: () {},
           ),
         ],
@@ -49,7 +52,7 @@ class ProductDetailsScreen extends StatelessWidget {
                     height: 180,
                     width: 180,
                     decoration: BoxDecoration(
-                      color: SmartBuyColors.vertClair,
+                      color: SmartBuyColors.lightGreen,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Center(
@@ -64,18 +67,21 @@ class ProductDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     "Catégorie : Alimentaire",
-                    style: TextStyle(color: SmartBuyColors.texteGris),
+                    style: TextStyle(color: SmartBuyColors.grey),
                   ),
                   const SizedBox(height: 12),
                   const Text(
                     "8 500 FCFA",
                     style: TextStyle(
-                      fontSize: 28, 
-                      fontWeight: FontWeight.w900, 
-                      color: SmartBuyColors.vertSénégal
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: SmartBuyColors.green,
                     ),
                   ),
-                  const Text("Prix le plus bas détecté", style: TextStyle(color: SmartBuyColors.vertSénégal, fontSize: 12)),
+                  const Text(
+                    "Prix le plus bas détecté",
+                    style: TextStyle(color: SmartBuyColors.green, fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -101,7 +107,10 @@ class ProductDetailsScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                  ),
                 ],
               ),
               child: Column(
@@ -112,9 +121,19 @@ class ProductDetailsScreen extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 16),
-                  _buildPriceRow("Auchan Dakar", "8 500 F", "Le moins cher", true),
+                  _buildPriceRow(
+                    "Auchan Dakar",
+                    "8 500 F",
+                    "Le moins cher",
+                    true,
+                  ),
                   const Divider(),
-                  _buildPriceRow("CityDia Plateau", "8 900 F", "Bon prix", false),
+                  _buildPriceRow(
+                    "CityDia Plateau",
+                    "8 900 F",
+                    "Bon prix",
+                    false,
+                  ),
                   const Divider(),
                   _buildPriceRow("Exclusive", "9 200 F", "Moyen", false),
                   const Divider(),
@@ -122,9 +141,9 @@ class ProductDetailsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 30),
-            
+
             // Bouton d'action principal
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -134,12 +153,17 @@ class ProductDetailsScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: SmartBuyColors.vertSénégal,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    backgroundColor: SmartBuyColors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: const Text(
                     "Ajouter à ma liste de courses",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -163,10 +187,16 @@ class ProductDetailsScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: SmartBuyColors.vertSénégal, size: 20),
+          Icon(icon, color: SmartBuyColors.green, size: 20),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          Text(label, style: const TextStyle(color: SmartBuyColors.texteGris, fontSize: 11)),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          Text(
+            label,
+            style: const TextStyle(color: SmartBuyColors.grey, fontSize: 11),
+          ),
         ],
       ),
     );
@@ -185,30 +215,35 @@ class ProductDetailsScreen extends StatelessWidget {
                 Text(shop, style: const TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: isBest ? SmartBuyColors.orMeilleur : Colors.grey.shade100,
+                    color: isBest
+                        ? SmartBuyColors.orange
+                        : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    tag, 
+                    tag,
                     style: TextStyle(
-                      fontSize: 10, 
-                      color: isBest ? Colors.white : SmartBuyColors.texteGris,
-                      fontWeight: FontWeight.bold
-                    )
+                      fontSize: 10,
+                      color: isBest ? Colors.white : SmartBuyColors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           Text(
-            price, 
+            price,
             style: TextStyle(
-              fontWeight: FontWeight.bold, 
+              fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: isBest ? SmartBuyColors.vertSénégal : SmartBuyColors.texteSombre
-            )
+              color: isBest ? SmartBuyColors.green : SmartBuyColors.black,
+            ),
           ),
         ],
       ),
