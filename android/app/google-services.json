@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "417544481776",
+    "project_id": "smartbuysenegal",
+    "storage_bucket": "smartbuysenegal.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417544481776:android:f528491439d3537cfe8b35",
+        "android_client_info": {
+          "package_name": "com.example.smartbuy_senegal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAYpIkgm_JkSOj-QAswW-J5gSJk9iRzRo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,25 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const SmartBuyApp());
-}
-
-class SmartBuyApp extends StatelessWidget {
-  const SmartBuyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SmartBuy - Scanner',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A3C2E)),
-        useMaterial3: true,
-      ),
-      home: const ScannerScreen(),
-    );
-  }
-}
 
 // ─────────────────────────────────────────────
 // ÉCRAN SCANNER
