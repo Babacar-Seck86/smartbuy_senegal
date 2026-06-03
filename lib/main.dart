@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'smartbuy_onboarding.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const SmartBuyApp());
 }
 
@@ -14,9 +20,7 @@ class SmartBuyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'SmartBuy Sénégal',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2E7D32),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D32)),
         useMaterial3: true,
         fontFamily: 'Roboto',
       ),
