@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smartbuy_senegal/smartbuy_profile.dart';
 import 'smartbuy_home.dart';
 import 'smartbuy_scanner.dart';
 import 'smartbuy_product_map.dart';
@@ -17,7 +18,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
     HomeScreen(),
     ScannerScreen(),
     MapScreen(),
-    _ProfilePlaceholder(),
+    ProfileScreen(),
   ];
 
   @override
@@ -31,28 +32,26 @@ class _MainNavScreenState extends State<MainNavScreen> {
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Accueil'),
-          BottomNavigationBarItem(icon: Icon(Icons.qr_code_scanner_outlined), activeIcon: Icon(Icons.qr_code_scanner), label: 'Scanner'),
-          BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: 'Carte'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Accueil',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.qr_code_scanner_outlined),
+            activeIcon: Icon(Icons.qr_code_scanner),
+            label: 'Scanner',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map_outlined),
+            label: 'Carte',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Profil',
+          ),
         ],
       ),
     );
-  }
-}
-
-class _HomePlaceholder extends StatelessWidget {
-  const _HomePlaceholder();
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Accueil')));
-  }
-}
-
-class _ProfilePlaceholder extends StatelessWidget {
-  const _ProfilePlaceholder();
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Profil — à venir')));
   }
 }
