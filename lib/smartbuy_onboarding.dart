@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'smartbuy_main_nav.dart';
+import 'auth/register_page.dart';
+import 'auth/login_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -25,13 +26,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'desc': 'Suivez vos économies et découvrez les tendances du jour pour toujours payer le meilleur prix.',
     },
   ];
-
-  void _goToApp() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const MainNavScreen()),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +107,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 if (_currentPage < 2) {
                                   setState(() => _currentPage++);
                                 } else {
-                                  _goToApp();
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const RegisterPage(),
+                                    ),
+                                  );
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -131,9 +130,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           const SizedBox(height: 16),
                           Center(
                             child: TextButton(
-                              onPressed: _goToApp,
-                              child: const Text('J\'ai déjà un compte',
-                                  style: TextStyle(color: Color(0xFF555555), fontSize: 14)),
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LoginPage(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'J\'ai déjà un compte',
+                                style: TextStyle(
+                                  color: Color(0xFF555555),
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
                           ),
                         ],
