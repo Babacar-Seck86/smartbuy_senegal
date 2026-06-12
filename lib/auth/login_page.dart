@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
+import '../smartbuy_main_nav.dart';
 
 class _SlideData {
   final IconData icon;
@@ -106,50 +107,56 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _seConnecter() async {
-    setState(() => _isLoading = true);
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+ Future<void> _seConnecter() async {
+  setState(() => _isLoading = true);
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainNavScreen()),
+        (route) => false,
       );
-    } on FirebaseAuthException catch (e) {
-      String message;
-      switch (e.code) {
-        case 'user-not-found':
-          message = 'Aucun compte trouvé avec cet email.';
-          break;
-        case 'wrong-password':
-          message = 'Mot de passe incorrect.';
-          break;
-        case 'invalid-credential':
-          message = 'Email ou mot de passe incorrect.';
-          break;
-        case 'invalid-email':
-          message = 'Email invalide.';
-          break;
-        default:
-          message = 'Erreur de connexion. Réessayez.';
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(children: [
-              const Icon(Icons.error_outline, color: Colors.white, size: 18),
-              const SizedBox(width: 10),
-              Text(message),
-            ]),
-            backgroundColor: const Color(0xFFB00020),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
-          ),
-        );
-      }
     }
-    if (mounted) setState(() => _isLoading = false);
+  } on FirebaseAuthException catch (e) {
+    String message;
+    switch (e.code) {
+      case 'user-not-found':
+        message = 'Aucun compte trouvé avec cet email.';
+        break;
+      case 'wrong-password':
+        message = 'Mot de passe incorrect.';
+        break;
+      case 'invalid-credential':
+        message = 'Email ou mot de passe incorrect.';
+        break;
+      case 'invalid-email':
+        message = 'Email invalide.';
+        break;
+      default:
+        message = 'Erreur de connexion. Réessayez.';
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(children: [
+            const Icon(Icons.error_outline, color: Colors.white, size: 18),
+            const SizedBox(width: 10),
+            Text(message),
+          ]),
+          backgroundColor: const Color(0xFFB00020),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
   }
-
+  if (mounted) setState(() => _isLoading = false);
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'auth/register_page.dart';
 import 'auth/login_page.dart';
 
@@ -27,6 +28,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     },
   ];
 
+ Future<void> _goToAuth() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('seen_onboarding', true);
+  if (!mounted) return;
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (_) => const LoginPage()),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,12 +117,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 if (_currentPage < 2) {
                                   setState(() => _currentPage++);
                                 } else {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const RegisterPage(),
-                                    ),
-                                  );
+                                  _goToAuth();
                                 }
                               },
                               style: ElevatedButton.styleFrom(
