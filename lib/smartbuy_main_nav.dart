@@ -17,7 +17,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
   final List<Widget> _pages = const [
     HomeScreen(),
     ScannerScreen(),
-    MapScreen(),
+    ProductDetailsScreen(),
     ProfileScreen(),
   ];
 
@@ -48,6 +48,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
             label: 'Profil',
           ),
         ],
