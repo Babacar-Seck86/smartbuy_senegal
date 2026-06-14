@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'smartbuy_main_nav.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'auth/register_page.dart';
+import 'auth/login_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -26,13 +28,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     },
   ];
 
-  void _goToApp() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const MainNavScreen()),
-    );
-  }
-
+ Future<void> _goToAuth() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('seen_onboarding', true);
+  if (!mounted) return;
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (_) => const LoginPage()),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +117,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 if (_currentPage < 2) {
                                   setState(() => _currentPage++);
                                 } else {
-                                  _goToApp();
+                                  _goToAuth();
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -131,9 +135,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           const SizedBox(height: 16),
                           Center(
                             child: TextButton(
-                              onPressed: _goToApp,
-                              child: const Text('J\'ai déjà un compte',
-                                  style: TextStyle(color: Color(0xFF555555), fontSize: 14)),
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LoginPage(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'J\'ai déjà un compte',
+                                style: TextStyle(
+                                  color: Color(0xFF555555),
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
                           ),
                         ],

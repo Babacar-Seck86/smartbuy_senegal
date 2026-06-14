@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'smartbuy_onboarding.dart';
+import 'auth/auth_wrapper.dart';
+import 'smartbuy_main_nav.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -22,9 +23,8 @@ class SmartBuyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D32)),
         useMaterial3: true,
-        fontFamily: 'Roboto',
       ),
-      home: const OnboardingScreen(),
+      home: AuthWrapper(mainScreen: MainNavScreen()),
     );
   }
 }
