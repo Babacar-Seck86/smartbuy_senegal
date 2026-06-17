@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smartbuy_senegal/smartbuy_profile.dart';
 import 'smartbuy_home.dart';
 import 'smartbuy_scanner.dart';
-import 'smartbuy_product_map.dart';
+import 'smartbuy_product_map.dart'; // ← nom de fichier inchangé
 
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
@@ -17,7 +17,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
   final List<Widget> _pages = const [
     HomeScreen(),
     ScannerScreen(),
-    ProductDetailsScreen(),
+    NearbyPartnersScreen(), // ← nouveau nom de classe
     ProfileScreen(),
   ];
 
@@ -44,6 +44,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.map_outlined),
+            activeIcon: Icon(Icons.map),
             label: 'Carte',
           ),
           BottomNavigationBarItem(
