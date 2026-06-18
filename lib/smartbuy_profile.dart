@@ -1,206 +1,252 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ==========================================
-// 1. ÉCRAN PRINCIPAL DU PROFIL
+// 1. ÉCRAN PRINCIPAL DU PROFIL (DYNAMIQUE EN TEMPS RÉEL)
 // ==========================================
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Déconnexion propre
+  Future<void> _handleLogout() async {
+    try {
+      await _auth.signOut();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('seen_onboarding');
+
+      if (!mounted) return;
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la déconnexion : $e')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F5),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'Mon Profil',
-          style: TextStyle(
-            color: Color(0xFF1A1A1A),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+    // Le StreamBuilder écoute les changements d'authentification Firebase en temps réel
+    return StreamBuilder<User?>(
+      stream: _auth.authStateChanges(),
+      builder: (context, snapshot) {
+        final User? user = snapshot.data;
+
+        // Extraction dynamique ou valeurs par défaut si pas encore configuré
+        final String displayName =
+            (user?.displayName != null && user!.displayName!.isNotEmpty)
+            ? user.displayName!
+            : 'Utilisateur SmartBuy';
+
+        final String email = user?.email ?? 'non_connecte@smartbuy.sn';
+        final String initial = displayName.isNotEmpty
+            ? displayName[0].toUpperCase()
+            : 'S';
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF5F7F5),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            title: const Text(
+              'Mon Profil',
+              style: TextStyle(
+                color: Color(0xFF1A1A1A),
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            centerTitle: true,
           ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // --- HEADER OVERVIEW ---
-            Container(
-              color: Colors.white,
-              width: double.infinity,
-              padding: const EdgeInsets.only(bottom: 24.0, top: 10.0),
-              child: Column(
-                children: [
-                  Stack(
-                    alignment: Alignment.bottomRight,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                // --- HEADER OVERVIEW ---
+                Container(
+                  color: Colors.white,
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(bottom: 24.0, top: 10.0),
+                  child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 46,
-                        backgroundColor: const Color(0xFFE8F5E9),
-                        child: const Text(
-                          'F',
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2E7D32),
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 46,
+                            backgroundColor: const Color(0xFFE8F5E9),
+                            child: Text(
+                              initial,
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2E7D32),
+                              ),
+                            ),
                           ),
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF2E7D32),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        displayName,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1A1A),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF2E7D32),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.edit,
-                          size: 16,
-                          color: Colors.white,
+                      const SizedBox(height: 4),
+                      Text(
+                        email,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF888888),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
-                  const Text(
-                    'Fatou Diop',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A1A),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'fatou.diop@domain.sn',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF888888)),
-                  ),
-                ],
-              ),
-            ),
+                ),
 
-            const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-            // --- SAVINGS & STATS DASHBOARD ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      icon: Icons.trending_down,
-                      iconColor: const Color(0xFF2E7D32),
-                      title: 'Économies',
-                      value: '14 500 F',
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildStatCard(
-                      icon: Icons.qr_code_scanner,
-                      iconColor: const Color(0xFF1565C0),
-                      title: 'Produits scannés',
-                      value: '24',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // --- OPTIONS MENU LIST ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Paramètres',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A1A),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFFEEEEEE)),
-                    ),
-                    child: Column(
-                      children: [
-                        _buildMenuTile(
-                          icon: Icons.person_outline,
-                          title: 'Informations personnelles',
-                          onTap: () {
-                            // Navigation vers l'écran défini plus bas
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const PersonalInfoScreen(),
-                              ),
-                            );
-                          },
+                // --- STATS ---
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: Icons.trending_down,
+                          iconColor: const Color(0xFF2E7D32),
+                          title: 'Économies',
+                          value: '14 500 F',
                         ),
-                        const Divider(height: 1, indent: 50),
-                        _buildMenuTile(
-                          icon: Icons.history,
-                          title: 'Historique des prix consultés',
-                          onTap: () {},
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: Icons.qr_code_scanner,
+                          iconColor: const Color(0xFF1565C0),
+                          title: 'Produits scannés',
+                          value: '24',
                         ),
-                        const Divider(height: 1, indent: 50),
-                        _buildMenuTile(
-                          icon: Icons.notifications_none,
-                          title: 'Notifications Alerte Prix',
-                          onTap: () {},
-                        ),
-                        const Divider(height: 1, indent: 50),
-                        _buildMenuTile(
-                          icon: Icons.help_outline,
-                          title: 'Aide & Support',
-                          onTap: () {},
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
-                  const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-                  // --- DECONNEXION BUTTON ---
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.logout, size: 18),
-                      label: const Text(
-                        'Se déconnecter',
+                // --- MENU ---
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Paramètres',
                         style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1A1A),
                         ),
                       ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFFD32F2F),
-                        side: const BorderSide(color: Color(0xFFFFCDD2)),
-                        shape: RoundedRectangleBorder(
+                      const SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFFEEEEEE)),
+                        ),
+                        child: Column(
+                          children: [
+                            _buildMenuTile(
+                              icon: Icons.person_outline,
+                              title: 'Informations personnelles',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        PersonalInfoScreen(user: user),
+                                  ),
+                                );
+                              },
+                            ),
+                            const Divider(height: 1, indent: 50),
+                            _buildMenuTile(
+                              icon: Icons.history,
+                              title: 'Historique des prix consultés',
+                              onTap: () {},
+                            ),
+                            const Divider(height: 1, indent: 50),
+                            _buildMenuTile(
+                              icon: Icons.notifications_none,
+                              title: 'Notifications Alerte Prix',
+                              onTap: () {},
+                            ),
+                            const Divider(height: 1, indent: 50),
+                            _buildMenuTile(
+                              icon: Icons.help_outline,
+                              title: 'Aide & Support',
+                              onTap: () {},
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+
+                      const SizedBox(height: 24),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: _handleLogout,
+                          icon: const Icon(Icons.logout, size: 18),
+                          label: const Text(
+                            'Se déconnecter',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFD32F2F),
+                            side: const BorderSide(color: Color(0xFFFFCDD2)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -222,7 +268,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: iconColor.withOpacity(0.1),
+            backgroundColor: iconColor.withAlpha(26),
             child: Icon(icon, color: iconColor, size: 18),
           ),
           const SizedBox(height: 12),
@@ -274,33 +320,66 @@ class ProfileScreen extends StatelessWidget {
 // 2. ÉCRAN DES INFORMATIONS PERSONNELLES
 // ==========================================
 class PersonalInfoScreen extends StatefulWidget {
-  const PersonalInfoScreen({super.key});
+  final User? user;
+  const PersonalInfoScreen({super.key, this.user});
 
   @override
   State<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
 }
 
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
-  final TextEditingController _nameController = TextEditingController(
-    text: 'Fatou Diop',
-  );
-  final TextEditingController _emailController = TextEditingController(
-    text: 'fatou.diop@domain.sn',
-  );
-  final TextEditingController _phoneController = TextEditingController(
-    text: '+221 77 123 45 67',
-  );
-  final TextEditingController _cityController = TextEditingController(
-    text: 'Dakar, Plateau',
-  );
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(
+      text: widget.user?.displayName ?? '',
+    );
+    _emailController = TextEditingController(text: widget.user?.email ?? '');
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
-    _cityController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveProfileChanges() async {
+    final String updatedName = _nameController.text.trim();
+    if (updatedName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Le nom ne peut pas être vide.')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.updateDisplayName(updatedName);
+        await user.reload(); // Notifie le StreamBuilder du changement
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Nom enregistré avec succès !'),
+            backgroundColor: Color(0xFF2E7D32),
+          ),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la sauvegarde : $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -345,29 +424,17 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               child: Column(
                 children: [
                   _buildInputField(
-                    label: 'Nom complet',
+                    label: 'Votre nom complet',
                     controller: _nameController,
                     icon: Icons.person_outline,
+                    hint: 'Entrez votre nom',
                   ),
                   const SizedBox(height: 20),
                   _buildInputField(
-                    label: 'Adresse e-mail',
+                    label: 'Adresse e-mail (Lecture seule)',
                     controller: _emailController,
                     icon: Icons.mail_outline,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildInputField(
-                    label: 'Numéro de téléphone',
-                    controller: _phoneController,
-                    icon: Icons.phone_android_outlined,
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildInputField(
-                    label: 'Ville / Quartier',
-                    controller: _cityController,
-                    icon: Icons.location_on_outlined,
+                    enabled: false,
                   ),
                 ],
               ),
@@ -379,15 +446,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Modifications enregistrées avec succès !'),
-                      backgroundColor: Color(0xFF2E7D32),
-                    ),
-                  );
-                  Navigator.pop(context);
-                },
+                onPressed: _isLoading ? null : _saveProfileChanges,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2E7D32),
                   foregroundColor: Colors.white,
@@ -396,10 +455,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Enregistrer les modifications',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        'Enregistrer les modifications',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -412,7 +483,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     required String label,
     required TextEditingController controller,
     required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
+    bool enabled = true,
+    String? hint,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,19 +500,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFF9FBF9),
+            color: enabled ? const Color(0xFFF9FBF9) : const Color(0xFFF2F2F2),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: const Color(0xFFE0E0E0)),
           ),
           child: TextField(
             controller: controller,
-            keyboardType: keyboardType,
-            style: const TextStyle(
+            enabled: enabled,
+            style: TextStyle(
               fontSize: 15,
-              color: Color(0xFF1A1A1A),
+              color: enabled
+                  ? const Color(0xFF1A1A1A)
+                  : const Color(0xFF888888),
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
+              hintText: hint,
               prefixIcon: Icon(icon, color: const Color(0xFF888888), size: 22),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
