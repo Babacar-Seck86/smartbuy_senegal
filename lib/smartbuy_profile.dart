@@ -30,7 +30,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
     try {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       setState(() {
         _userData = doc.exists ? doc.data() : null;
         _loading = false;
@@ -50,11 +53,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler', style: TextStyle(color: Color(0xFF888888))),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(color: Color(0xFF888888)),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Se déconnecter', style: TextStyle(color: Color(0xFFD32F2F))),
+            child: const Text(
+              'Se déconnecter',
+              style: TextStyle(color: Color(0xFFD32F2F)),
+            ),
           ),
         ],
       ),
@@ -75,7 +84,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final nomComplet = (_userData?['nom'] ?? user?.displayName ?? '').toString().trim();
+    final nomComplet = (_userData?['nom'] ?? user?.displayName ?? '')
+        .toString()
+        .trim();
     final email = user?.email ?? (_userData?['email'] ?? '').toString();
     final initiale = nomComplet.isNotEmpty ? nomComplet[0].toUpperCase() : '?';
     final economies = _userData?['economies'] ?? 0;
@@ -89,12 +100,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         automaticallyImplyLeading: false,
         title: const Text(
           'Mon Profil',
-          style: TextStyle(color: Color(0xFF1A1A1A), fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Color(0xFF1A1A1A),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2E7D32)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
+            )
           : SingleChildScrollView(
               child: Column(
                 children: [
@@ -126,19 +143,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Color(0xFF2E7D32),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                              child: const Icon(
+                                Icons.edit,
+                                size: 16,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 14),
                         Text(
                           nomComplet.isNotEmpty ? nomComplet : 'Utilisateur',
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A1A1A),
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           email.isNotEmpty ? email : 'Aucun email',
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF888888)),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF888888),
+                          ),
                         ),
                       ],
                     ),
@@ -154,9 +182,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: _buildStatCard(
                             icon: Icons.trending_down,
-                            iconColor: const Color(0xFF2E7D32),
+                            iconColor: const Color(
+                              0xFF888888,
+                            ), // Changé en gris
                             title: 'Économies',
                             value: '$economies F',
+                            enabled: false, // Grisé et désactivé
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -166,6 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             iconColor: const Color(0xFF1565C0),
                             title: 'Produits scannés',
                             value: '$produitsScannes',
+                            enabled: false, // Grisé et désactivé
                           ),
                         ),
                       ],
@@ -182,7 +214,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const Text(
                           'Paramètres',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A1A1A),
+                          ),
                         ),
                         const SizedBox(height: 10),
                         Container(
@@ -200,7 +236,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => PersonalInfoScreen(userData: _userData),
+                                      builder: (_) => PersonalInfoScreen(
+                                        userData: _userData,
+                                      ),
                                     ),
                                   );
                                   _loadUserData(); // rafraîchit après modification
@@ -211,18 +249,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 icon: Icons.history,
                                 title: 'Historique des prix consultés',
                                 onTap: () {},
+                                enabled: false, // Grisé et désactivé
                               ),
                               const Divider(height: 1, indent: 50),
                               _buildMenuTile(
                                 icon: Icons.notifications_none,
                                 title: 'Notifications Alerte Prix',
                                 onTap: () {},
+                                enabled: false, // Grisé et désactivé
                               ),
                               const Divider(height: 1, indent: 50),
                               _buildMenuTile(
                                 icon: Icons.help_outline,
                                 title: 'Aide & Support',
                                 onTap: () {},
+                                enabled: false, // Grisé et désactivé
                               ),
                             ],
                           ),
@@ -239,12 +280,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             icon: const Icon(Icons.logout, size: 18),
                             label: const Text(
                               'Se déconnecter',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFFD32F2F),
                               side: const BorderSide(color: Color(0xFFFFCDD2)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
                           ),
                         ),
@@ -263,30 +309,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required Color iconColor,
     required String title,
     required String value,
+    bool enabled = true,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEEEEEE)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: iconColor.withOpacity(0.1),
-            child: Icon(icon, color: iconColor, size: 18),
-          ),
-          const SizedBox(height: 12),
-          Text(title, style: const TextStyle(fontSize: 12, color: Color(0xFF888888))),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
-          ),
-        ],
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.5, // Réduit l'opacité si désactivé
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFEEEEEE)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: iconColor.withOpacity(0.1),
+              child: Icon(icon, color: iconColor, size: 18),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 12, color: Color(0xFF888888)),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -295,15 +352,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    bool enabled = true,
   }) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF555555), size: 22),
+      leading: Icon(
+        icon,
+        color: enabled ? const Color(0xFF555555) : const Color(0xFFBBBBBB),
+        size: 22,
+      ),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF1A1A1A)),
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: enabled
+              ? const Color(0xFF1A1A1A)
+              : const Color(0xFFBBBBBB), // Texte grisé
+        ),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Color(0xFFBBBBBB)),
-      onTap: onTap,
+      trailing: enabled
+          ? const Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: Color(0xFFBBBBBB),
+            )
+          : null, // Retire la flèche si désactivé
+      onTap: enabled ? onTap : null, // Désactive l'action du clic
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
     );
   }
@@ -331,10 +405,18 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   void initState() {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
-    _nameController = TextEditingController(text: widget.userData?['nom'] ?? '');
-    _emailController = TextEditingController(text: user?.email ?? widget.userData?['email'] ?? '');
-    _phoneController = TextEditingController(text: widget.userData?['telephone'] ?? '');
-    _cityController = TextEditingController(text: widget.userData?['ville'] ?? '');
+    _nameController = TextEditingController(
+      text: widget.userData?['nom'] ?? '',
+    );
+    _emailController = TextEditingController(
+      text: user?.email ?? widget.userData?['email'] ?? '',
+    );
+    _phoneController = TextEditingController(
+      text: widget.userData?['telephone'] ?? '',
+    );
+    _cityController = TextEditingController(
+      text: widget.userData?['ville'] ?? '',
+    );
   }
 
   @override
@@ -369,7 +451,10 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e'), backgroundColor: const Color(0xFFB00020)),
+          SnackBar(
+            content: Text('Erreur : $e'),
+            backgroundColor: const Color(0xFFB00020),
+          ),
         );
       }
     }
@@ -384,12 +469,20 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF2E7D32), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Color(0xFF2E7D32),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Informations personnelles',
-          style: TextStyle(color: Color(0xFF1A1A1A), fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Color(0xFF1A1A1A),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
       ),
@@ -408,14 +501,19 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               ),
               child: Column(
                 children: [
-                  _buildInputField(label: 'Nom complet', controller: _nameController, icon: Icons.person_outline),
+                  _buildInputField(
+                    label: 'Nom complet',
+                    controller: _nameController,
+                    icon: Icons.person_outline,
+                  ),
                   const SizedBox(height: 20),
                   _buildInputField(
                     label: 'Adresse e-mail',
                     controller: _emailController,
                     icon: Icons.mail_outline,
                     keyboardType: TextInputType.emailAddress,
-                    enabled: false, // email géré par Firebase Auth, non modifiable ici
+                    enabled:
+                        false, // email géré par Firebase Auth, non modifiable ici
                   ),
                   const SizedBox(height: 20),
                   _buildInputField(
@@ -425,7 +523,11 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     keyboardType: TextInputType.phone,
                   ),
                   const SizedBox(height: 20),
-                  _buildInputField(label: 'Ville / Quartier', controller: _cityController, icon: Icons.location_on_outlined),
+                  _buildInputField(
+                    label: 'Ville / Quartier',
+                    controller: _cityController,
+                    icon: Icons.location_on_outlined,
+                  ),
                 ],
               ),
             ),
@@ -438,17 +540,26 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2E7D32),
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 0,
                 ),
                 child: _saving
                     ? const SizedBox(
-                        width: 20, height: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
                       )
                     : const Text(
                         'Enregistrer les modifications',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
               ),
             ),
@@ -468,7 +579,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF666666))),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF666666),
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -480,11 +598,18 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             controller: controller,
             keyboardType: keyboardType,
             enabled: enabled,
-            style: const TextStyle(fontSize: 15, color: Color(0xFF1A1A1A), fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 15,
+              color: Color(0xFF1A1A1A),
+              fontWeight: FontWeight.w500,
+            ),
             decoration: InputDecoration(
               prefixIcon: Icon(icon, color: const Color(0xFF888888), size: 22),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 14,
+                horizontal: 16,
+              ),
             ),
           ),
         ),
