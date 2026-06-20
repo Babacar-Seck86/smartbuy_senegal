@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,13 +19,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final String _localisation = 'Dakar, Sénégal';
 
   AnimationController? _headerController;
-  AnimationController? _pulseController;
   Animation<double>? _headerAnim;
-  Animation<double>? _pulseAnim;
-
-  // Compte à rebours offres flash
-  int _flashSeconds = 3600;
-  Timer? _flashTimer;
 
   final List<String> _categories = ['Tout', 'Alimentaire', 'Hygiène', 'Boissons', 'Maison', 'Électronique'];
 
@@ -34,18 +27,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _headerController = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
-    _pulseController  = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))..repeat(reverse: true);
     _headerAnim = CurvedAnimation(parent: _headerController!, curve: Curves.easeOut);
-    _pulseAnim  = CurvedAnimation(parent: _pulseController!, curve: Curves.easeInOut);
     _headerController!.forward();
     _searchController.addListener(() {
       final q = _searchController.text.trim().toLowerCase();
       setState(() { _searchQuery = q; _showSuggestions = q.isNotEmpty; });
     });
     _loadUserData();
-    _flashTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted && _flashSeconds > 0) setState(() => _flashSeconds--);
-    });
   }
 
   Future<void> _loadUserData() async {
@@ -64,16 +52,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void dispose() {
     _searchController.dispose();
     _headerController?.dispose();
-    _pulseController?.dispose();
-    _flashTimer?.cancel();
     super.dispose();
-  }
-
-  String get _flashTime {
-    final h = _flashSeconds ~/ 3600;
-    final m = (_flashSeconds % 3600) ~/ 60;
-    final s = _flashSeconds % 60;
-    return '${h.toString().padLeft(2,'0')}:${m.toString().padLeft(2,'0')}:${s.toString().padLeft(2,'0')}';
   }
 
   Stream<QuerySnapshot> _buildStream() {
@@ -261,10 +240,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text(
-                    _selectedCategory == 'Tout' ? 'Tendances du jour' : _selectedCategory,
+                    _searchQuery.isNotEmpty
+                        ? 'Résultats pour "$_searchQuery"'
+                        : (_selectedCategory == 'Tout' ? 'Tendances du jour' : _selectedCategory),
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
                   ),
-                  const Text('Voir tout', style: TextStyle(fontSize: 13, color: Color(0xFF2E7D32))),
+                  if (_searchQuery.isEmpty)
+                    const Text('Voir tout', style: TextStyle(fontSize: 13, color: Color(0xFF2E7D32))),
                 ]),
               ),
               const SizedBox(height: 14),
@@ -303,47 +285,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 28),
 
-              // ══ OFFRES FLASH ══
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFF6F00), Color(0xFFFF8F00)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [BoxShadow(color: const Color(0xFFFF6F00).withOpacity(0.3), blurRadius: 14, offset: const Offset(0, 5))],
-                  ),
-                  child: Row(children: [
-                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Row(children: [
-                        Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
-                        SizedBox(width: 4),
-                        Text('Offres Flash', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                      ]),
-                      const SizedBox(height: 4),
-                      const Text('Jusqu\'à -25% sur\nles produits du jour', style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.4)),
-                    ]),
-                    const Spacer(),
-                    Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                      const Text('Se termine dans', style: TextStyle(color: Colors.white60, fontSize: 10)),
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
-                        child: Text(_flashTime,
-                          style: const TextStyle(color: Color(0xFFFF6F00), fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'monospace')),
-                      ),
-                    ]),
-                  ]),
-                ),
-              ),
-
-              const SizedBox(height: 28),
-
               // ══ PARTENAIRES ANIMÉS ══
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -355,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 14),
               SizedBox(
-                height: 70,
+                height: 86,
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   scrollDirection: Axis.horizontal,
@@ -384,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 14),
               SizedBox(
-                height: 120,
+                height: 150,
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   scrollDirection: Axis.horizontal,
