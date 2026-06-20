@@ -45,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   Future<void> inscrireUtilisateur() async {
-    // Validations nnnnnnnnnnnnnnnnn
+    // Validations 
     if (_nomController.text.trim().isEmpty ||
         _telephoneController.text.trim().isEmpty ||
         _emailController.text.trim().isEmpty ||
